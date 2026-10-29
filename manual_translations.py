@@ -370,6 +370,9 @@ SPECIAL = {
     ("text4.fmsg", 8): "pts\n\nveces",
     ("text3.fmsg", 467): "Nv.",
     ("text3.fmsg", 599): "Nv.",
+    # The brand name is retained; only the English tagline is localized.
+    ("textnew_01.fmsg", 13): "Fatal Frame\nBasado en una historia real.",
+    ("textnew_01.fmsg", 825): "y todo el equipo original",
 }
 
 OVERRIDES = (SPECIAL, STORY, STORY_EXTRA, STORY_REMAINING, STORY_ONGOING, STORY_FINAL, TUTORIAL_FINAL, ARTBOOK, ARTBOOK_EXTENDED, ARTBOOK_LORE, BONUS_UI, CREDITS, SCENE, LORE, SCENERY, CINEMATICS, RECORDINGS, GALLERY, ACCESSORIES, TEXT6, TEXT6_TAIL, TEXT7, TEXT8, TEXT9, TEXT2, UI)

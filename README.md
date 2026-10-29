@@ -2,15 +2,15 @@
 
 Proyecto privado para localizar los recursos de la versión PC de *Mask of the Lunar Eclipse*. Repositorio principal: `E:\Proyectos\fatal-frame-mol-es` (GitHub privado: `rubocopter/fatal-frame-mol-es`).
 
-## Estado del borrador (29/10/2026)
+## Estado instalado (29/10/2026)
 
-- **7.329 entradas FMSG traducidas** sobre 9.030 entradas originales, en 13 archivos de `binary/text/USen`. Se parte exclusivamente de los originales ingleses y se comprueba la huella del texto original por entrada. El parche de terceros sirvió para localizar los recursos, nunca como fuente lingüística.
-- **977 entradas señaladas como pendientes por el detector genérico.** No equivalen a 977 frases en inglés: entre ellas hay secuencias de control, números, resoluciones, nombres propios, títulos de la saga, etiquetas que se escriben igual en castellano y textos legales de bibliotecas. Se conservan deliberadamente los avisos legales y los créditos personales.
+- **7.331 entradas FMSG traducidas** sobre 9.030 entradas originales, en 13 archivos de `binary/text/USen`. Se parte exclusivamente de los originales ingleses y se comprueba la huella del texto original por entrada. El parche de terceros sirvió para localizar los recursos, nunca como fuente lingüística. El último repaso localizó también el lema «Basado en una historia real» y la línea de créditos «y todo el equipo original».
+- **975 entradas conservadas y señaladas por el detector genérico.** No equivalen a 975 frases pendientes en inglés: se comprobaron las restantes entradas con letras y predominan secuencias de control, números, resoluciones, nombres propios, títulos oficiales de la saga, etiquetas que se escriben igual en castellano, otras lenguas del selector y textos legales de bibliotecas. Se conservan deliberadamente los avisos legales y los créditos personales.
 - Fuente `binary/font/JP/default.g1n` extendida para `á í ó ú ñ Á Í Ó Ú Ñ ¿ ¡` y comprobación automática de cobertura de glifos.
 - **19 rótulos gráficos en castellano en cuatro KSCL** (`binary/layout/en`): pulsa cualquier botón, nueva partida, fácil y encabezados de menús. Se mantienen logotipos, caligrafía japonesa y demás gráficos no textuales.
-- **Solo existe una prueba previa y breve dentro del juego:** el usuario vio diálogos y tutoriales en español, con tildes correctas. Los cuatro KSCL nuevos **aún no se han comprobado en el juego**, ni se ha completado una partida con el parche actualizado. Sigue siendo una **versión de prueba**, sin QA editorial ni visual completa.
+- **Instalado y verificado en el juego de este equipo:** los 18 archivos y sus originales respaldados coinciden con el manifiesto SHA-256. Los 358 archivos del pack de texturas HD también se compararon con sus fuentes y siguen idénticos. La única prueba previa dentro del juego fue breve: diálogos y tutoriales en español, con tildes correctas. Los cuatro KSCL nuevos **aún no se han comprobado visualmente en el juego**, ni se ha completado una partida con esta revisión. Sigue siendo una **versión de prueba**, sin QA editorial ni visual completa.
 
-El paquete compilado se genera localmente en `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-draft\`. Nunca se suben a GitHub los archivos originales del juego ni los paquetes compilados.
+El paquete compilado se encuentra en `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-draft\`. Su ZIP de esta revisión es `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-esES-2026-10-29-7331-18-assets.zip` (SHA-256 `9d9d6ab612b6b11815a8feb2fe5a3434e5b781a739458d50dace372415295fc9`; archivo `.zip.sha256` al lado). Nunca se suben a GitHub los archivos originales del juego ni los paquetes compilados.
 
 ## Requisitos y rutas (Windows)
 
@@ -31,7 +31,7 @@ cd 'E:\Proyectos\fatal-frame-mol-es'
 py -X utf8 manage_patch.py status --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
 ```
 
-La instalación de este equipo conserva el **borrador anterior de 14 archivos**. Para pasar al parche nuevo con 18 archivos, ejecutar:
+**La actualización de los 14 recursos del borrador anterior a los 18 recursos de esta revisión ya se realizó y verificó el 29/10/2026.** `status` debe mostrar `installed: 18` y `Verified original backup: yes`. Solo si alguna instalación anterior sigue pendiente de actualizar, ejecutar:
 
 ```powershell
 py -X utf8 manage_patch.py upgrade --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
@@ -51,7 +51,7 @@ py -X utf8 manage_patch.py restore --game-root 'E:\Games\FATAL FRAME - PROJECT Z
 
 `status` distingue `previous draft`, `installed`, `original` y archivos ajenos al parche. `upgrade` verifica SHA-256 de los antiguos archivos parcheados, de los respaldos originales y de los nuevos KSCL. Rechaza un recurso modificado por un tercero, y tiene recuperación ante errores de escritura. Si la comprobación falla, revisar el error; no copiar archivos manualmente sobre el juego.
 
-**Texturas HD:** los 358 recursos del pack revisado afectan a `binary/character`, `binary/stage` y otros recursos de `binary/layout`, pero no coinciden con los 18 archivos del parche. No es necesario reinstalar el pack HD. No se han modificado otros mods.
+**Texturas HD:** los 358 recursos del pack revisado afectan a `binary/character`, `binary/stage` y otros recursos de `binary/layout`, pero no coinciden con los 18 archivos del parche. Se han cotejado los SHA-256 de los 358 recursos instalados con los archivos de `C:\Users\Oni\Downloads\fatal frame 4 texturas hd\binary`: los 358 coinciden; no falta ninguno. No es necesario reinstalar el pack HD. No se han modificado otros mods.
 
 ## Volver a generar el paquete desde los originales
 
