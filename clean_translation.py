@@ -24,7 +24,7 @@ QA = ROOT / "work" / "clean_es_qa.json"
 
 # Spanish accented capitals and inverted punctuation are available in the
 # separately generated draft G1N atlas; unsupported symbols remain blocked.
-# Runtime glyph rendering is still unverified: never install this draft yet.
+# Runtime glyph rendering and line breaks require full in-game QA.
 UNSUPPORTED = set("«»ªº")
 # Keep the text in correct Unicode in the intermediate draft.
 CODE = re.compile(r"\^[0-9a-fA-F]{2}(?:~[0-9a-fA-F]{2}~)?|%(?:\d+\$)?[-+ .#0-9]*[a-zA-Z]")
@@ -39,6 +39,18 @@ def source_files():
     found = sorted(SOURCE.glob("*.fmsg"))
     if len(found) != 13:
         raise ValueError(f"Expected 13 English FMSG files, found {len(found)}")
+    # A trial patch may already be installed. Never silently export a patched
+    # FMSG as if it were the English original and poison source fingerprints.
+    marker = GAME / ".fatal-frame-es-originals" / "backup_manifest.json"
+    if marker.is_file():
+        previous = json.loads(marker.read_text(encoding="utf-8"))
+        for path in found:
+            item = f"binary/text/USen/{path.name}"
+            entry = previous.get("files", {}).get(item)
+            if entry is None or hashlib.sha256(path.read_bytes()).hexdigest() != entry["original_sha256"]:
+                raise ValueError(
+                    f"Original English FMSG required: {path}. "
+                    "Set FF_MOL_GAME_DIR to the verified .fatal-frame-es-originals backup.")
     for path in found:
         yield path, load(path)
 
@@ -120,13 +132,13 @@ def build():
     if set(entries) != seen:
         raise ValueError(f"Translations reference unknown entries: {set(entries)-seen}")
     report = {
-        "status": "DRAFT - do not install; incomplete translation and glyph QA",
+        "status": "DRAFT - full story, line layout and in-game font QA pending",
         "reference": "original English USen FMSG only",
         "total_entries": total, "translated_entries": changed,
         "untranslated_or_unreviewed_entries": words_to_translate,
         "warnings": dict(warnings), "examples": dict(examples),
         "output": str(OUTPUT),
-        "font_status": "Original game font remains in place; Spanish glyphs not yet verified",
+        "font_status": "Extended font is built separately; full in-game testing remains pending",
     }
     QA.parent.mkdir(parents=True, exist_ok=True)
     QA.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

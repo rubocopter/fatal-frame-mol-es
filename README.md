@@ -1,75 +1,75 @@
-# FATAL FRAME / PROJECT ZERO: Mask of the Lunar Eclipse — Traducción al español (España)
+# FATAL FRAME / PROJECT ZERO: Mask of the Lunar Eclipse — castellano (es-ES)
 
-Proyecto **privado y en desarrollo** para traducir al castellano los textos de la versión de PC de *FATAL FRAME / PROJECT ZERO: Mask of the Lunar Eclipse*.
+Proyecto privado para localizar los recursos de la versión PC de *Mask of the Lunar Eclipse*. Repositorio principal: `E:\Proyectos\fatal-frame-mol-es` (GitHub privado: `rubocopter/fatal-frame-mol-es`).
 
-La traducción se elabora a partir de los archivos **originales en inglés (`USen`)**. Un parche de terceros se utilizó inicialmente para identificar la ubicación de los recursos; **sus textos no son la base de esta traducción**.
+## Estado del borrador (29/10/2026)
 
-## Estado
+- **7.329 entradas FMSG traducidas** sobre 9.030 entradas originales, en 13 archivos de `binary/text/USen`. Se parte exclusivamente de los originales ingleses y se comprueba la huella del texto original por entrada. El parche de terceros sirvió para localizar los recursos, nunca como fuente lingüística.
+- **977 entradas señaladas como pendientes por el detector genérico.** No equivalen a 977 frases en inglés: entre ellas hay secuencias de control, números, resoluciones, nombres propios, títulos de la saga, etiquetas que se escriben igual en castellano y textos legales de bibliotecas. Se conservan deliberadamente los avisos legales y los créditos personales.
+- Fuente `binary/font/JP/default.g1n` extendida para `á í ó ú ñ Á Í Ó Ú Ñ ¿ ¡` y comprobación automática de cobertura de glifos.
+- **19 rótulos gráficos en castellano en cuatro KSCL** (`binary/layout/en`): pulsa cualquier botón, nueva partida, fácil y encabezados de menús. Se mantienen logotipos, caligrafía japonesa y demás gráficos no textuales.
+- **Solo existe una prueba previa y breve dentro del juego:** el usuario vio diálogos y tutoriales en español, con tildes correctas. Los cuatro KSCL nuevos **aún no se han comprobado en el juego**, ni se ha completado una partida con el parche actualizado. Sigue siendo una **versión de prueba**, sin QA editorial ni visual completa.
 
-- **Borrador:** 7.324 entradas traducidas de un total de 9.030 cadenas FMSG.
-- El resto incluye textos pendientes de revisión y entradas que deben mantenerse intactas (nombres propios, códigos, créditos personales y avisos legales). También se han localizado y traducido los encabezados de los créditos.
-- Los 13 archivos FMSG se reconstruyen y verifican contra el texto inglés original.
-- Fuente G1N adaptada para `á í ó ú ñ Á Í Ó Ú Ñ ¿ ¡`.
-- **Prueba preliminar en el juego (29/10/2026):** el usuario confirmó diálogos y tutoriales en español, con tildes aparentemente correctas, tras unos minutos de juego. No se ha validado toda la aventura ni la presentación de todos los textos.
-- **Pendiente:** comprobar el ajuste de líneas, la calidad final de la traducción y los gráficos del menú principal. No hay una versión final aprobada.
+El paquete compilado se genera localmente en `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-draft\`. Nunca se suben a GitHub los archivos originales del juego ni los paquetes compilados.
 
-## Contenido del repositorio
+## Requisitos y rutas (Windows)
 
-Los módulos `*_translations.py`, `story_*.py` y `manual_translations.py` contienen la traducción editorial. `fmsg_format.py`, `clean_translation.py` y `font_support.py` se encargan de reconstruir los recursos desde una instalación legítima. `manage_patch.py` empaqueta e instala el borrador de forma reversible; `test_manage_patch.py` comprueba instalación, restauración y recuperación ante fallos.
+- Juego: `E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse`.
+- Proyecto y herramientas de construcción: `E:\Proyectos\fatal-frame-mol-es`.
+- Copia de seguridad verificada del parche anterior: `E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse\.fatal-frame-es-originals` — **no borrar**.
+- Python 3.10+ (`py` en PowerShell) y Pillow. Instalar solo si faltan: `cd 'E:\Proyectos\fatal-frame-mol-es'; py -m pip install -r 'E:\Proyectos\fatal-frame-mol-es\requirements.txt'`.
+- Fuente de Windows `C:\Windows\Fonts\georgia.ttf` para generar los rótulos KSCL.
 
-**El repositorio no incluye archivos originales del juego, volcados del texto inglés, archivos de fuentes/recursos propietarios ni parches compilados.** Estos archivos se generan localmente. Los derechos del juego corresponden a sus titulares. Proyecto no oficial y sin relación con KOEI TECMO.
+Las herramientas de terceros estudiadas están bajo `E:\Proyectos\fatal-frame-mol-es\tools\` y se excluyen de Git. **No hace falta abrir sus interfaces ni instalar nada de ellas para aplicar el parche**: los scripts del proyecto generan los archivos necesarios.
 
-## Preparación local (Windows)
+## Instalar o actualizar el borrador
 
-Requisitos: Python 3.10+ y una copia del juego para PC con los archivos de texto originales en inglés.
+**Cerrar el juego** antes de ejecutar comandos. Desde PowerShell:
 
 ```powershell
-py -m pip install -r requirements.txt
-$env:FF_MOL_GAME_DIR = 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
+cd 'E:\Proyectos\fatal-frame-mol-es'
+py -X utf8 manage_patch.py status --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
 ```
 
-La variable `FF_MOL_GAME_DIR` debe apuntar a la carpeta del juego en tu equipo. Si no se define, se usa la ruta local de desarrollo de Windows.
-
-**Si ya está instalado un parche de prueba**, la compilación necesita los originales: utiliza como `FF_MOL_GAME_DIR` la carpeta `.fatal-frame-es-originals` de una copia de seguridad verificada. Para el subcomando `package`, `--game-root` también debe apuntar a esa carpeta de originales; para `status`, `install` y `restore`, apunta a la instalación real del juego. No sustituyas ni borres los archivos del juego para compilar.
+La instalación de este equipo conserva el **borrador anterior de 14 archivos**. Para pasar al parche nuevo con 18 archivos, ejecutar:
 
 ```powershell
+py -X utf8 manage_patch.py upgrade --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
+```
+
+Para una instalación original sin parche anterior (solo cuando `status` indique todos los archivos `original`):
+
+```powershell
+py -X utf8 manage_patch.py install --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
+```
+
+Para restaurar los originales después de instalar o actualizar **esta versión**, manteniendo la copia de seguridad:
+
+```powershell
+py -X utf8 manage_patch.py restore --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
+```
+
+`status` distingue `previous draft`, `installed`, `original` y archivos ajenos al parche. `upgrade` verifica SHA-256 de los antiguos archivos parcheados, de los respaldos originales y de los nuevos KSCL. Rechaza un recurso modificado por un tercero, y tiene recuperación ante errores de escritura. Si la comprobación falla, revisar el error; no copiar archivos manualmente sobre el juego.
+
+**Texturas HD:** los 358 recursos del pack revisado afectan a `binary/character`, `binary/stage` y otros recursos de `binary/layout`, pero no coinciden con los 18 archivos del parche. No es necesario reinstalar el pack HD. No se han modificado otros mods.
+
+## Volver a generar el paquete desde los originales
+
+Si se modifican las traducciones en los módulos `*_translations.py` o los recursos KSCL, ejecutar en `E:\Proyectos\fatal-frame-mol-es`:
+
+```powershell
+cd 'E:\Proyectos\fatal-frame-mol-es'
+$env:FF_MOL_GAME_DIR = 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse\.fatal-frame-es-originals'
 py -X utf8 clean_translation.py export
 py -X utf8 manual_translations.py
 py -X utf8 clean_translation.py build
 py -X utf8 font_support.py
-py -X utf8 manage_patch.py package --game-root "$env:FF_MOL_GAME_DIR"
-py -X utf8 manage_patch.py status --game-root "$env:FF_MOL_GAME_DIR"
-```
-
-La salida se almacena en `out/` y las evidencias de compilación y QA en `work/`. Todas estas carpetas están excluidas de Git. `translations_from_english.json` también se genera localmente.
-
-## Prueba del borrador
-
-Solo para pruebas y con el juego cerrado, después de verificar que `status` indica los 14 recursos originales:
-
-```powershell
-py -X utf8 manage_patch.py install --game-root "$env:FF_MOL_GAME_DIR"
-py -X utf8 manage_patch.py restore --game-root "$env:FF_MOL_GAME_DIR"
-```
-
-La instalación comprueba hashes SHA-256, crea una copia de seguridad en `.fatal-frame-es-originals` dentro del directorio del juego y restaura los originales bajo demanda. **Conserva esa copia de seguridad.** La prueba visual en el juego ha sido breve; la traducción sigue siendo un borrador.
-
-## Menú principal y gráficos de interfaz
-
-Varios rótulos ingleses están **dibujados en texturas KSCL**, por ejemplo `Press Any Button` en `binary/layout/en/title_layout.kscl` y `New Game` en `binary/layout/en/title_layout_menu_parts.kscl`. Otros encabezados se encuentran en `cmn_title_mission.kscl`. Esos gráficos no se traducen editando los FMSG: requieren una adaptación de texturas, empaquetado y pruebas independientes. La instalación actual solo sustituye textos FMSG y la fuente; por eso pueden permanecer rótulos del menú en inglés aunque existan traducciones FMSG equivalentes.
-
-La revisión técnica y editorial del 29/10/2026 queda documentada en [docs/review-2026-10-29.md](docs/review-2026-10-29.md).
-
-## Compatibilidad con packs de texturas HD
-
-El pack HD comprobado contiene 358 archivos (`.gmpk`, `.kscl` y `.kslt`) distribuidos en `binary/character`, `binary/stage` y `binary/layout`. Todos están presentes en la instalación de prueba y sus rutas no se solapan con las que modifica este parche: 13 archivos `binary/text/USen/*.fmsg` y la fuente `binary/font/JP/default.g1n`.
-
-Por tanto, el instalador y la restauración de esta traducción conservan los recursos del pack HD. No es necesario reinstalar las texturas ni integrarlas en el parche de traducción. Esta comprobación se limita al pack revisado; otros mods que alteren textos o fuentes podrían entrar en conflicto.
-
-## Pruebas
-
-```powershell
+$env:FF_MOL_GAME_DIR = 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
+py -X utf8 layout_translation.py
+py -X utf8 manage_patch.py package --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse\.fatal-frame-es-originals'
 py -X utf8 -m unittest -v test_manage_patch
 ```
 
-El trabajo editorial seguirá en los módulos de traducción. Antes de publicar una versión distribuible habrá que revisar cobertura, terminología, límites de texto y compatibilidad con los glifos españoles.
+**Es fundamental usar la copia original para FMSG y G1N**, porque el juego tiene un borrador aplicado; el exportador bloquea expresamente intentar usarlo como origen inglés. Para KSCL el generador usa los cuatro originales de la instalación mientras están intactos y, después de actualizar el juego, lee automáticamente los originales verificados de `.fatal-frame-es-originals`.
+
+El código, QA y pruebas se documentan en [docs/review-2026-10-29.md](docs/review-2026-10-29.md). Los archivos `work/`, `out/`, `tools/`, `translations_from_english.json` y los archivos originales del juego están excluidos del repositorio. Los derechos del juego pertenecen a sus titulares; proyecto no oficial, sin relación con KOEI TECMO.

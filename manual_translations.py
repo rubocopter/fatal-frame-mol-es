@@ -363,6 +363,13 @@ SPECIAL = {
     ("system.fmsg", 864): "En posesión",
     ("system.fmsg", 895): "Puntuación máxima",
     ("system.fmsg", 912): "Cámara %02d",
+    # Remaining visible English abbreviations/phrases after the full corpus review.
+    # Keep names, game titles, language-selection alternatives and legal notices intact.
+    ("text2.fmsg", 357): "¿Kagura?",
+    ("text4.fmsg", 2): "pts\n\nveces",
+    ("text4.fmsg", 8): "pts\n\nveces",
+    ("text3.fmsg", 467): "Nv.",
+    ("text3.fmsg", 599): "Nv.",
 }
 
 OVERRIDES = (SPECIAL, STORY, STORY_EXTRA, STORY_REMAINING, STORY_ONGOING, STORY_FINAL, TUTORIAL_FINAL, ARTBOOK, ARTBOOK_EXTENDED, ARTBOOK_LORE, BONUS_UI, CREDITS, SCENE, LORE, SCENERY, CINEMATICS, RECORDINGS, GALLERY, ACCESSORIES, TEXT6, TEXT6_TAIL, TEXT7, TEXT8, TEXT9, TEXT2, UI)
