@@ -17,8 +17,8 @@ El paquete compilado se genera localmente en `E:\Proyectos\fatal-frame-mol-es\ou
 - Juego: `E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse`.
 - Proyecto y herramientas de construcción: `E:\Proyectos\fatal-frame-mol-es`.
 - Copia de seguridad verificada del parche anterior: `E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse\.fatal-frame-es-originals` — **no borrar**.
-- Python 3.10+ (`py` en PowerShell) y Pillow. Instalar solo si faltan: `cd 'E:\Proyectos\fatal-frame-mol-es'; py -m pip install -r 'E:\Proyectos\fatal-frame-mol-es\requirements.txt'`.
-- Fuente de Windows `C:\Windows\Fonts\georgia.ttf` para generar los rótulos KSCL.
+- **Para aplicar el parche compilado:** Python 3.10+ (`py` en PowerShell). No se necesita Pillow ni ejecutar las herramientas de terceros.
+- **Solo para regenerar** el paquete a partir de los archivos originales: instalar Pillow con `cd 'E:\Proyectos\fatal-frame-mol-es'; py -m pip install -r 'E:\Proyectos\fatal-frame-mol-es\requirements.txt'`. El generador KSCL utiliza la fuente de Windows `C:\Windows\Fonts\georgia.ttf`.
 
 Las herramientas de terceros estudiadas están bajo `E:\Proyectos\fatal-frame-mol-es\tools\` y se excluyen de Git. **No hace falta abrir sus interfaces ni instalar nada de ellas para aplicar el parche**: los scripts del proyecto generan los archivos necesarios.
 
