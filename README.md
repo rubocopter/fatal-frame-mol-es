@@ -53,6 +53,12 @@ py -X utf8 manage_patch.py restore --game-root "$env:FF_MOL_GAME_DIR"
 
 La instalación comprueba hashes SHA-256, crea una copia de seguridad en `.fatal-frame-es-originals` dentro del directorio del juego y restaura los originales bajo demanda. **Conserva esa copia de seguridad.** No se ha completado todavía la verificación visual dentro del juego.
 
+## Compatibilidad con packs de texturas HD
+
+El pack HD comprobado contiene 358 archivos (`.gmpk`, `.kscl` y `.kslt`) distribuidos en `binary/character`, `binary/stage` y `binary/layout`. Todos están presentes en la instalación de prueba y sus rutas no se solapan con las que modifica este parche: 13 archivos `binary/text/USen/*.fmsg` y la fuente `binary/font/JP/default.g1n`.
+
+Por tanto, el instalador y la restauración de esta traducción conservan los recursos del pack HD. No es necesario reinstalar las texturas ni integrarlas en el parche de traducción. Esta comprobación se limita al pack revisado; otros mods que alteren textos o fuentes podrían entrar en conflicto.
+
 ## Pruebas
 
 ```powershell
