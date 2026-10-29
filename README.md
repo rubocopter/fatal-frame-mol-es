@@ -6,11 +6,12 @@ La traducción se elabora a partir de los archivos **originales en inglés (`USe
 
 ## Estado
 
-- **Borrador:** 7.238 entradas preparadas de un total de 9.030 cadenas FMSG.
-- El resto incluye textos pendientes de revisión y entradas que deben mantenerse intactas (nombres propios, códigos, créditos y avisos legales).
+- **Borrador:** 7.324 entradas traducidas de un total de 9.030 cadenas FMSG.
+- El resto incluye textos pendientes de revisión y entradas que deben mantenerse intactas (nombres propios, códigos, créditos personales y avisos legales). También se han localizado y traducido los encabezados de los créditos.
 - Los 13 archivos FMSG se reconstruyen y verifican contra el texto inglés original.
 - Fuente G1N adaptada para `á í ó ú ñ Á Í Ó Ú Ñ ¿ ¡`.
-- **Pendiente:** comprobar dentro del juego la representación de glifos, el ajuste de líneas y la calidad final de la traducción. No hay una versión final aprobada.
+- **Prueba preliminar en el juego (29/10/2026):** el usuario confirmó diálogos y tutoriales en español, con tildes aparentemente correctas, tras unos minutos de juego. No se ha validado toda la aventura ni la presentación de todos los textos.
+- **Pendiente:** comprobar el ajuste de líneas, la calidad final de la traducción y los gráficos del menú principal. No hay una versión final aprobada.
 
 ## Contenido del repositorio
 
@@ -51,7 +52,13 @@ py -X utf8 manage_patch.py install --game-root "$env:FF_MOL_GAME_DIR"
 py -X utf8 manage_patch.py restore --game-root "$env:FF_MOL_GAME_DIR"
 ```
 
-La instalación comprueba hashes SHA-256, crea una copia de seguridad en `.fatal-frame-es-originals` dentro del directorio del juego y restaura los originales bajo demanda. **Conserva esa copia de seguridad.** No se ha completado todavía la verificación visual dentro del juego.
+La instalación comprueba hashes SHA-256, crea una copia de seguridad en `.fatal-frame-es-originals` dentro del directorio del juego y restaura los originales bajo demanda. **Conserva esa copia de seguridad.** La prueba visual en el juego ha sido breve; la traducción sigue siendo un borrador.
+
+## Menú principal y gráficos de interfaz
+
+Varios rótulos ingleses están **dibujados en texturas KSCL**, por ejemplo `Press Any Button` en `binary/layout/en/title_layout.kscl` y `New Game` en `binary/layout/en/title_layout_menu_parts.kscl`. Otros encabezados se encuentran en `cmn_title_mission.kscl`. Esos gráficos no se traducen editando los FMSG: requieren una adaptación de texturas, empaquetado y pruebas independientes. La instalación actual solo sustituye textos FMSG y la fuente; por eso pueden permanecer rótulos del menú en inglés aunque existan traducciones FMSG equivalentes.
+
+La revisión técnica y editorial del 29/10/2026 queda documentada en [docs/review-2026-10-29.md](docs/review-2026-10-29.md).
 
 ## Compatibilidad con packs de texturas HD
 

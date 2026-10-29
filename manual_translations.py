@@ -17,6 +17,7 @@ from artbook_translations import ARTBOOK
 from artbook_extended_translations import ARTBOOK_EXTENDED
 from artbook_lore_translations import ARTBOOK_LORE
 from bonus_ui_translations import BONUS_UI
+from credits_translations import CREDITS
 from ui_translations import UI
 from text2_translations import TEXT2
 from text2_scene_translations import SCENE
@@ -364,7 +365,7 @@ SPECIAL = {
     ("system.fmsg", 912): "Cámara %02d",
 }
 
-OVERRIDES = (SPECIAL, STORY, STORY_EXTRA, STORY_REMAINING, STORY_ONGOING, STORY_FINAL, TUTORIAL_FINAL, ARTBOOK, ARTBOOK_EXTENDED, ARTBOOK_LORE, BONUS_UI, SCENE, LORE, SCENERY, CINEMATICS, RECORDINGS, GALLERY, ACCESSORIES, TEXT6, TEXT6_TAIL, TEXT7, TEXT8, TEXT9, TEXT2, UI)
+OVERRIDES = (SPECIAL, STORY, STORY_EXTRA, STORY_REMAINING, STORY_ONGOING, STORY_FINAL, TUTORIAL_FINAL, ARTBOOK, ARTBOOK_EXTENDED, ARTBOOK_LORE, BONUS_UI, CREDITS, SCENE, LORE, SCENERY, CINEMATICS, RECORDINGS, GALLERY, ACCESSORIES, TEXT6, TEXT6_TAIL, TEXT7, TEXT8, TEXT9, TEXT2, UI)
 
 
 def translation_for(key, english, fallback=None):
