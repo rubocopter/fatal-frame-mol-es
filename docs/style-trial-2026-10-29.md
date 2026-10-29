@@ -30,3 +30,7 @@ Se verificaron esas condiciones y se inspeccionaron las dos comparativas.
 **La muestra no se ha instalado ni probado dentro del juego.** La instalación
 de 42 recursos sigue intacta. Falta valorar el acabado con el usuario y después
 comprobar su encaje en las pantallas y animaciones reales antes de extenderlo.
+
+## Evolución posterior
+
+Esta nota describe la muestra inicial. El usuario la aprobó y autorizó extenderla; el acabado se amplió e instaló según [style-rollout-2026-10-29.md](style-rollout-2026-10-29.md). El renderizador compartido se encuentra ahora en `label_style.py`; `style_preview.py` sigue generando una muestra separada.

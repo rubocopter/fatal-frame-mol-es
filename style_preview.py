@@ -11,9 +11,10 @@ import hashlib
 import json
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageChops
+from PIL import Image, ImageDraw, ImageFont
 
 import layout_translation as layout
+from label_style import trial_label
 
 
 ROOT = Path(__file__).resolve().parent
@@ -35,78 +36,6 @@ CASES = {
     "cmn_title_mission.kscl": {"fnt_title_option": "Opciones"},
 }
 
-
-def trial_label(source, name, text):
-    heading = name.startswith("fnt_title_")
-    option = name.startswith("option_top_")
-    loop = name.endswith(("_Loop", "_loop"))
-    selected = name.endswith("_on") or name.startswith("Press_Any_Button")
-    opaque = source.getchannel("A").histogram()[255] >= source.width * source.height * .99
-    # Exclude the dark shadow and low-opacity halo when measuring the letters.
-    light = source.convert("L")
-    alpha = source.getchannel("A")
-    core = ImageChops.multiply(light, alpha)
-    peak = core.getextrema()[1]
-    box = core.point(lambda p: 255 if p >= peak * .65 else 0).getbbox()
-    if box is None:
-        raise ValueError(f"No lettering in {name}")
-    size = 128
-    font = ImageFont.truetype(str(Path("C:/Windows/Fonts") /
-                                    ("timesbd.ttf" if heading else "times.ttf")), size)
-    spacing = 11 if heading else 1.4
-    mask = Image.new("L", (5000, 260))
-    draw = ImageDraw.Draw(mask)
-    x = 10.
-    for ch in text:
-        draw.text((round(x), 170), ch, font=font, fill=255, anchor="ls")
-        x += draw.textlength(ch, font=font) + spacing
-    glyph = mask.crop(mask.getbbox())
-    target_h = box[3] - box[1]
-    # "Nueva partida" has descenders absent from "New Game". Match its
-    # capital height, allowing the p to descend below the original baseline.
-    reference_h = glyph.height
-    if name.startswith("fnt_menu_newgame"):
-        reference = Image.new("L", mask.size)
-        ImageDraw.Draw(reference).text((10, 170), "New Game", font=font,
-                                       fill=255, anchor="ls")
-        ref_box = reference.getbbox()
-        reference_h = ref_box[3] - ref_box[1]
-    scale = target_h / reference_h
-    target_w = min(round(glyph.width * scale), source.width - 24)
-    # Keep the cap height: fit long Spanish lines horizontally rather than
-    # making every letter smaller in both axes.
-    glyph = glyph.resize((target_w, round(glyph.height * scale)), Image.Resampling.LANCZOS)
-    x = box[0] if heading else round((box[0] + box[2] - glyph.width) / 2)
-    y = box[1]
-    x = max(12, min(x, source.width - glyph.width - 12))
-    mask = Image.new("L", source.size)
-    mask.paste(glyph, (x, y))
-    result = Image.new("RGBA", source.size, (0, 0, 0, 255 if opaque else 0))
-
-    def layer(color, coverage, strength=1.):
-        ink = Image.new("RGBA", source.size, (*color, 0))
-        ink.putalpha(coverage.point(lambda p: round(p * strength)))
-        result.alpha_composite(ink)
-
-    shadow = Image.new("L", source.size)
-    shadow.paste(glyph, (x + 1, y + 3))
-    layer((0, 0, 0), shadow.filter(ImageFilter.GaussianBlur(2)), .85)
-    if heading:
-        layer((181, 201, 207), mask)
-    elif loop:
-        layer((221, 187, 43), mask.filter(ImageFilter.GaussianBlur(4.5)), .72)
-        layer((228, 211, 91), mask.filter(ImageFilter.GaussianBlur(1.5)), .78)
-    elif selected:
-        halo = (245, 216, 149) if option else (255, 182, 27)
-        layer(halo, mask.filter(ImageFilter.GaussianBlur(6)), .8)
-        layer(halo, mask.filter(ImageFilter.GaussianBlur(2.5)), .78)
-        layer((255, 247, 217), mask)
-    elif option:
-        layer((171, 140, 45), mask.filter(ImageFilter.GaussianBlur(6)), .45)
-        layer((205, 191, 140), mask, .76)
-    else:
-        layer((204, 201, 183), mask)
-    return result
 
 
 def build():

@@ -14,14 +14,14 @@ import os
 from pathlib import Path
 import struct
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image
+
+from label_style import make_label
 
 
 ROOT = Path(__file__).resolve().parent
 GAME = Path(os.environ.get("FF_MOL_GAME_DIR", r"E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse"))
 OUTPUT = ROOT / "work" / "layout_es" / "binary" / "layout" / "en"
-FONT = Path(r"C:\Windows\Fonts\georgia.ttf")
-NARROW_FONT = Path(r"C:\Windows\Fonts\arial.ttf")
 
 # These are the labels actually drawn into the English interface textures.
 # Preserve branded logos, Japanese calligraphy, and other non-language art.
@@ -235,86 +235,6 @@ def encode(image, fmt, expected):
         raise ValueError(f"Re-encoded texture size changed: {len(pixels)} != {expected}")
     return pixels
 
-
-def make_label(source: Image.Image, name: str, spanish: str):
-    width, height = source.size
-    alpha = source.getchannel("A")
-    opaque = alpha.histogram()[255] >= width * height * 0.99
-    if opaque:
-        # Some animated title sprites are fully opaque black DXT5 images.
-        # Their alpha bounding box describes the *background*, not the letters.
-        original_box = source.convert("L").point(
-            lambda value: 255 if value > 90 else 0).getbbox()
-    else:
-        # Exclude wide, low-alpha halos from the text geometry.
-        original_box = alpha.point(lambda value: 255 if value >= 96 else 0).getbbox()
-    if original_box is None:
-        raise ValueError(f"No source lettering found: {name}")
-    heading = name.startswith("fnt_title_")
-    glowing = (name.endswith(("_on", "_on_loop", "_select", "_sel", "_glow", "_eff"))
-               or "Press_Any_Button" in name)
-    looping = name.endswith(("_loop", "_on_loop"))
-    # Preserve the source's dominant lettering tint (blue, gold, red, etc.).
-    # Some sprites are intentionally dim while their selected partners glow.
-    colors = [(r, g, b) for r, g, b, a in source.getdata()
-              if (opaque or a >= 96) and r + g + b > 105]
-    if colors:
-        colors.sort(key=sum)
-        bright = colors[3 * len(colors) // 4:]
-        color = tuple(round(sum(c[i] for c in bright) / len(bright)) for i in range(3))
-    else:
-        color = (180, 201, 209) if heading else (212, 204, 187)
-    # Match the source sprite's original vertical size and anchor; fit long labels.
-    font_size = 64
-    font = ImageFont.truetype(str(NARROW_FONT if name.startswith("fnt_bonus_") else FONT), font_size)
-    letter_spacing = 4 if heading else 0
-    def draw_text(layer, xy, fill):
-        d = ImageDraw.Draw(layer)
-        x, y = xy
-        if letter_spacing == 0:
-            d.text((x, y), spanish, font=font, fill=fill, anchor="ls")
-        else:
-            # Each glyph shares the same baseline; top anchoring separately
-            # placed characters shifts accented letters and mixed case.
-            for ch in spanish:
-                d.text((round(x), y), ch, font=font, fill=fill, anchor="ls")
-                x += d.textlength(ch, font=font) + letter_spacing
-    measure = Image.new("RGBA", (max(1500, width * 3), height * 3))
-    draw_text(measure, (12, font_size + 12), (*color, 255))
-    box = measure.getchannel("A").getbbox()
-    if box is None:
-        raise ValueError(f"Empty rendered label: {name}")
-    glyph = measure.crop(box)
-    max_width = max(8, width - (original_box[0] + 8 if heading else 12))
-    target_height = max(9, original_box[3] - original_box[1])
-    ratio = min(max_width / glyph.width, target_height / glyph.height)
-    glyph = glyph.resize((max(1, round(glyph.width * ratio)), max(1, round(glyph.height * ratio))), Image.Resampling.LANCZOS)
-    result = Image.new("RGBA", source.size, (0, 0, 0, 255) if opaque else (0, 0, 0, 0))
-    # Anchor the translated line to the original text's center for menu controls.
-    x = original_box[0] if heading else round((original_box[0] + original_box[2] - glyph.width) / 2)
-    y = round((original_box[1] + original_box[3] - glyph.height) / 2)
-    x = max(2, min(x, width - glyph.width - 2))
-    y = max(2, min(y, height - glyph.height - 2))
-    mask = Image.new("L", source.size)
-    mask.paste(glyph.getchannel("A"), (x + 1, y + 2))
-    shadow_alpha = mask.filter(ImageFilter.GaussianBlur(2.2 if heading else 3))
-    shadow = Image.new("RGBA", source.size, (0, 0, 0, 0))
-    shadow.putalpha(shadow_alpha.point(lambda p: round(p * 0.50)))
-    result.alpha_composite(shadow)
-    if glowing:
-        # The glow source must be a single-channel alpha mask. Pasting an L
-        # image into RGBA makes its rectangular bounds fully opaque, causing
-        # visible colored plates behind selected labels after DXT5 encoding.
-        glow_mask = Image.new("L", source.size)
-        glow_mask.paste(glyph.getchannel("A"), (x, y))
-        alpha = glow_mask.filter(ImageFilter.GaussianBlur(5 if looping else 3))
-        glow = Image.new("RGBA", source.size, (*color, 0))
-        glow.putalpha(alpha.point(lambda p: round(p * (0.86 if looping else 0.62))))
-        result.alpha_composite(glow)
-    result.alpha_composite(glyph, (x, y))
-    if looping:
-        result = result.filter(ImageFilter.GaussianBlur(1.7))
-    return result
 
 
 def build(game: Path = GAME):

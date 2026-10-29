@@ -93,7 +93,7 @@ class PatchLifecycle(unittest.TestCase):
     def older_patch(self, paths=None):
         older = Path(self.temp.name) / "older_patch"
         shutil.copytree(self.folder, older)
-        # Exercise both the first 14-file draft and the later 18-file draft.
+        # Exercise older manifests, including a new build of the same paths.
         paths = mod.LEGACY_PATHS if paths is None else paths
         old_manifest = mod.load_json(older / "manifest.json")
         for name in mod.PATHS:
@@ -153,6 +153,31 @@ class PatchLifecycle(unittest.TestCase):
         self.assertEqual(len(updated["files"]), len(mod.PATHS))
         for key, value in original["files"].items():
             self.assertEqual(value["original_sha256"], updated["files"][key]["original_sha256"])
+        mod.restore(self.game, self.folder)
+        self.assert_original()
+
+    def test_upgrade_same_42_paths_with_changed_texture_and_restore(self):
+        import layout_translation
+
+        previous = self.older_patch(mod.PATHS)
+        item = "binary/layout/en/title_layout_menu_parts.kscl"
+        asset = previous / mod.relative(item)
+        raw = bytearray(asset.read_bytes())
+        index = layout_translation.textures(raw)
+        start = index["fnt_menu_newgame_on"][3]
+        raw[start + 12] ^= 16
+        asset.write_bytes(raw)
+        manifest = mod.load_json(previous / "manifest.json")
+        manifest["files"][item]["patched_sha256"] = mod.sha(asset)
+        mod.write_json(previous / "manifest.json", manifest)
+        mod.install(self.game, previous)
+        originals = {p: mod.sha(self.game / mod.BACKUP_FOLDER / mod.relative(p))
+                     for p in mod.PATHS}
+        mod.upgrade(self.game, self.folder)
+        self.assertEqual(set(mod.file_states(self.game, self.manifest).values()), {"installed"})
+        self.assertEqual(mod.backup_manifest(self.game)["files"], self.manifest["files"])
+        self.assertEqual(originals, {p: mod.sha(self.game / mod.BACKUP_FOLDER / mod.relative(p))
+                                     for p in mod.PATHS})
         mod.restore(self.game, self.folder)
         self.assert_original()
 
