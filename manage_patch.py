@@ -34,9 +34,26 @@ TEXT_FILES = (
 )
 LEGACY_PATHS = [f"binary/text/USen/{name}" for name in TEXT_FILES]
 LEGACY_PATHS.append("binary/font/JP/default.g1n")
-KSCL_FILES = (
+PREVIOUS_KSCL_FILES = (
     "title_layout.kscl", "title_layout_menu_parts.kscl",
     "title_layout_difficulty_parts.kscl", "cmn_title_mission.kscl",
+)
+PREVIOUS_18_PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in PREVIOUS_KSCL_FILES]
+PREVIOUS_31_KSCL_FILES = PREVIOUS_KSCL_FILES + (
+    "option_menu_parts.kscl", "cmn_tab.kscl", "camera_menu_parts.kscl",
+    "inventory_menu_parts.kscl", "gallery_top_parts.kscl", "photo_layout.kscl",
+    "ghostlist_layout.kscl", "mission_select_tab.kscl", "camera_equip_parts.kscl",
+    "gameover.kscl", "mission_start_window.kscl", "result.kscl",
+    "tv_rating_layout.kscl",
+)
+PREVIOUS_31_PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in PREVIOUS_31_KSCL_FILES]
+KSCL_FILES = PREVIOUS_31_KSCL_FILES + (
+    "audio_list_parts.kscl", "change_costume_parts.kscl",
+    "gallery_image_parts.kscl", "ghostlist_list_parts.kscl",
+    "item_exchange_parts.kscl", "item_list_parts.kscl",
+    "menu_synopsis_list_parts.kscl", "mission_select_list.kscl",
+    "mission_start_layout.kscl", "now_saving_layout.kscl",
+    "pause_layout.kscl",
 )
 PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in KSCL_FILES]
 
@@ -68,6 +85,10 @@ def managed_paths(manifest: dict) -> list[str]:
     files = manifest.get("files", {})
     if set(files) == set(PATHS):
         return PATHS
+    if set(files) == set(PREVIOUS_31_PATHS):
+        return PREVIOUS_31_PATHS
+    if set(files) == set(PREVIOUS_18_PATHS):
+        return PREVIOUS_18_PATHS
     if set(files) == set(LEGACY_PATHS):
         return LEGACY_PATHS
     raise ValueError("Unsupported or incomplete patch manifest")
@@ -174,7 +195,7 @@ def package(game: Path) -> None:
         "  python manage_patch.py install\n"
         "  python manage_patch.py upgrade  (si ya hay un borrador instalado)\n"
         "  python manage_patch.py restore\n\n"
-        "Incluye 13 FMSG, fuente G1N y 4 KSCL de títulos y menús.\n"
+        f"Incluye 13 FMSG, fuente G1N y {len(KSCL_FILES)} KSCL de interfaz.\n"
         "El instalador verifica los archivos del juego mediante SHA-256 y crea\n"
         "una copia de seguridad en .fatal-frame-es-originals. No la borres.\n"
         "La instalación queda bloqueada si el juego no coincide con la versión\n"

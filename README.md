@@ -7,10 +7,10 @@ Proyecto privado para localizar los recursos de la versión PC de *Mask of the L
 - **7.331 entradas FMSG traducidas** sobre 9.030 entradas originales, en 13 archivos de `binary/text/USen`. Se parte exclusivamente de los originales ingleses y se comprueba la huella del texto original por entrada. El parche de terceros sirvió para localizar los recursos, nunca como fuente lingüística. El último repaso localizó también el lema «Basado en una historia real» y la línea de créditos «y todo el equipo original».
 - **975 entradas conservadas y señaladas por el detector genérico.** No equivalen a 975 frases pendientes en inglés: se comprobaron las restantes entradas con letras y predominan secuencias de control, números, resoluciones, nombres propios, títulos oficiales de la saga, etiquetas que se escriben igual en castellano, otras lenguas del selector y textos legales de bibliotecas. Se conservan deliberadamente los avisos legales y los créditos personales.
 - Fuente `binary/font/JP/default.g1n` extendida para `á í ó ú ñ Á Í Ó Ú Ñ ¿ ¡` y comprobación automática de cobertura de glifos.
-- **19 rótulos gráficos en castellano en cuatro KSCL** (`binary/layout/en`): pulsa cualquier botón, nueva partida, fácil y encabezados de menús. Se mantienen logotipos, caligrafía japonesa y demás gráficos no textuales.
-- **Instalado y verificado en el juego de este equipo:** los 18 archivos y sus originales respaldados coinciden con el manifiesto SHA-256. Los 358 archivos del pack de texturas HD también se compararon con sus fuentes y siguen idénticos. La única prueba previa dentro del juego fue breve: diálogos y tutoriales en español, con tildes correctas. Los cuatro KSCL nuevos **aún no se han comprobado visualmente en el juego**, ni se ha completado una partida con esta revisión. Sigue siendo una **versión de prueba**, sin QA editorial ni visual completa.
+- **118 rótulos gráficos en castellano en 28 KSCL** (`binary/layout/en`): menú principal, dificultad, pestañas, Cámara Oscura, inventario, galería de fotos, lista de fantasmas, misiones, resultados, bonificaciones, fin de partida y otras pantallas. Se mantienen logotipos, caligrafía japonesa y gráficos no textuales. Los estados normal/seleccionado/animado se han recompuesto por separado.
+- **Instalado y verificado en el juego de este equipo:** los 42 archivos (13 FMSG, una fuente G1N y 28 KSCL) y sus respectivos originales respaldados coinciden con el manifiesto SHA-256. Se verificaron los 358 archivos del pack HD: 347 permanecen idénticos en el juego y once KSCL del pack se conservan byte a byte en el respaldo, con la traducción superpuesta en la instalación. La prueba anterior dentro del juego fue breve (diálogos y tutoriales en español). **Esta revisión de los menús todavía no se ha comprobado dentro del juego** ni se ha completado una partida. Sigue siendo una **versión de prueba**.
 
-El paquete compilado se encuentra en `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-draft\`. Su ZIP de esta revisión es `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-esES-2026-10-29-7331-18-assets.zip` (SHA-256 `9d9d6ab612b6b11815a8feb2fe5a3434e5b781a739458d50dace372415295fc9`; archivo `.zip.sha256` al lado). Nunca se suben a GitHub los archivos originales del juego ni los paquetes compilados.
+El paquete compilado está en `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-draft\`. ZIP de esta revisión: `E:\Proyectos\fatal-frame-mol-es\out\fatal-frame-mol-es-esES-2026-10-29-7331-42-assets.zip` (SHA-256 `207fe55e946ab4c496820e5680eb020de1ec2367cf55feac71f93a727cc4eefc`; comprobante `.zip.sha256` contiguo). El ZIP contiene 45 entradas comprobadas tras comprimir: 42 recursos, manifiesto, instalador y guía. Nunca se suben a GitHub los originales del juego ni los paquetes compilados.
 
 ## Requisitos y rutas (Windows)
 
@@ -18,7 +18,7 @@ El paquete compilado se encuentra en `E:\Proyectos\fatal-frame-mol-es\out\fatal-
 - Proyecto y herramientas de construcción: `E:\Proyectos\fatal-frame-mol-es`.
 - Copia de seguridad verificada del parche anterior: `E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse\.fatal-frame-es-originals` — **no borrar**.
 - **Para aplicar el parche compilado:** Python 3.10+ (`py` en PowerShell). No se necesita Pillow ni ejecutar las herramientas de terceros.
-- **Solo para regenerar** el paquete a partir de los archivos originales: instalar Pillow con `cd 'E:\Proyectos\fatal-frame-mol-es'; py -m pip install -r 'E:\Proyectos\fatal-frame-mol-es\requirements.txt'`. El generador KSCL utiliza la fuente de Windows `C:\Windows\Fonts\georgia.ttf`.
+- **Solo para regenerar** el paquete a partir de los archivos originales: instalar Pillow con `cd 'E:\Proyectos\fatal-frame-mol-es'; py -m pip install -r 'E:\Proyectos\fatal-frame-mol-es\requirements.txt'`. El generador KSCL utiliza las fuentes de Windows `C:\Windows\Fonts\georgia.ttf` y `C:\Windows\Fonts\arial.ttf`.
 
 Las herramientas de terceros estudiadas están bajo `E:\Proyectos\fatal-frame-mol-es\tools\` y se excluyen de Git. **No hace falta abrir sus interfaces ni instalar nada de ellas para aplicar el parche**: los scripts del proyecto generan los archivos necesarios.
 
@@ -31,7 +31,7 @@ cd 'E:\Proyectos\fatal-frame-mol-es'
 py -X utf8 manage_patch.py status --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
 ```
 
-**La actualización de los 14 recursos del borrador anterior a los 18 recursos de esta revisión ya se realizó y verificó el 29/10/2026.** `status` debe mostrar `installed: 18` y `Verified original backup: yes`. Solo si alguna instalación anterior sigue pendiente de actualizar, ejecutar:
+**La actualización desde los borradores de 18 y 31 recursos a los 42 recursos de esta revisión ya se realizó y verificó el 29/10/2026.** `status` debe mostrar `installed: 42` y `Verified original backup: yes`. El instalador también admite migrar desde los borradores de 14, 18 o 31 recursos. Solo si alguna otra instalación sigue pendiente de actualizar, ejecutar:
 
 ```powershell
 py -X utf8 manage_patch.py upgrade --game-root 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
@@ -51,7 +51,7 @@ py -X utf8 manage_patch.py restore --game-root 'E:\Games\FATAL FRAME - PROJECT Z
 
 `status` distingue `previous draft`, `installed`, `original` y archivos ajenos al parche. `upgrade` verifica SHA-256 de los antiguos archivos parcheados, de los respaldos originales y de los nuevos KSCL. Rechaza un recurso modificado por un tercero, y tiene recuperación ante errores de escritura. Si la comprobación falla, revisar el error; no copiar archivos manualmente sobre el juego.
 
-**Texturas HD:** los 358 recursos del pack revisado afectan a `binary/character`, `binary/stage` y otros recursos de `binary/layout`, pero no coinciden con los 18 archivos del parche. Se han cotejado los SHA-256 de los 358 recursos instalados con los archivos de `C:\Users\Oni\Downloads\fatal frame 4 texturas hd\binary`: los 358 coinciden; no falta ninguno. No es necesario reinstalar el pack HD. No se han modificado otros mods.
+**Texturas HD:** el pack ubicado en `C:\Users\Oni\Downloads\fatal frame 4 texturas hd\binary` incluye 358 archivos. De ellos, 347 siguen intactos en el juego. Los once KSCL que coinciden con el parche se han traducido partiendo de los archivos HD instalados: `camera_menu_parts`, `cmn_tab`, `ghostlist_layout`, `mission_select_tab`, `audio_list_parts`, `change_costume_parts`, `gallery_image_parts`, `ghostlist_list_parts`, `item_exchange_parts`, `item_list_parts` y `menu_synopsis_list_parts`. Sus versiones HD originales se preservan y verifican por SHA-256 en `.fatal-frame-es-originals`; `restore` recupera exactamente esas versiones. No se necesita reinstalar el pack HD.
 
 ## Volver a generar el paquete desde los originales
 
@@ -70,6 +70,6 @@ py -X utf8 manage_patch.py package --game-root 'E:\Games\FATAL FRAME - PROJECT Z
 py -X utf8 -m unittest -v test_manage_patch
 ```
 
-**Es fundamental usar la copia original para FMSG y G1N**, porque el juego tiene un borrador aplicado; el exportador bloquea expresamente intentar usarlo como origen inglés. Para KSCL el generador usa los cuatro originales de la instalación mientras están intactos y, después de actualizar el juego, lee automáticamente los originales verificados de `.fatal-frame-es-originals`.
+**Es fundamental usar la copia original para FMSG y G1N**, porque el juego tiene un borrador aplicado; el exportador bloquea expresamente intentar usarlo como origen inglés. El generador KSCL lee los originales verificados en `.fatal-frame-es-originals`, incluidas las once texturas HD de interfaz; solo para recursos nuevos que nunca fueron gestionados utiliza el archivo vivo del juego. El script comprueba estructura y metadatos de los KSCL.
 
 El código, QA y pruebas se documentan en [docs/review-2026-10-29.md](docs/review-2026-10-29.md). Los archivos `work/`, `out/`, `tools/`, `translations_from_english.json` y los archivos originales del juego están excluidos del repositorio. Los derechos del juego pertenecen a sus titulares; proyecto no oficial, sin relación con KOEI TECMO.

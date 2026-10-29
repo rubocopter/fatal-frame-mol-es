@@ -90,14 +90,14 @@ class PatchLifecycle(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unexpected game files"):
             mod.restore(self.game, self.folder)
 
-    def older_patch(self):
+    def older_patch(self, paths=None):
         older = Path(self.temp.name) / "older_patch"
         shutil.copytree(self.folder, older)
-        # Previous draft contains just 13 text files and a font; its backup
-        # must be upgraded with four new original KSCL resources.
+        # Exercise both the first 14-file draft and the later 18-file draft.
+        paths = mod.LEGACY_PATHS if paths is None else paths
         old_manifest = mod.load_json(older / "manifest.json")
         for name in mod.PATHS:
-            if name not in mod.LEGACY_PATHS:
+            if name not in paths:
                 (older / mod.relative(name)).unlink()
                 del old_manifest["files"][name]
         item = mod.PATHS[0]
@@ -123,9 +123,48 @@ class PatchLifecycle(unittest.TestCase):
         self.assertEqual(
             {p: old["original_sha256"] for p, old in prior["files"].items()},
             {p: updated["files"][p]["original_sha256"] for p in prior["files"]})
-        self.assertEqual(len(updated["files"]), 18)
+        self.assertEqual(len(updated["files"]), len(mod.PATHS))
         mod.restore(self.game, self.folder)
         self.assert_original()
+
+    def test_upgrade_18_file_draft_and_restore(self):
+        previous = self.older_patch(mod.PREVIOUS_18_PATHS)
+        self.assertEqual(len(mod.validated_manifest(previous)["files"]), 18)
+        mod.install(self.game, previous)
+        original = mod.backup_manifest(self.game)
+        mod.upgrade(self.game, self.folder)
+        self.assertEqual(set(mod.file_states(self.game, self.manifest).values()), {"installed"})
+        updated = mod.backup_manifest(self.game)
+        self.assertEqual(len(updated["files"]), len(mod.PATHS))
+        self.assertEqual(updated["files"], self.manifest["files"])
+        for key, value in original["files"].items():
+            self.assertEqual(value["original_sha256"], updated["files"][key]["original_sha256"])
+        mod.restore(self.game, self.folder)
+        self.assert_original()
+
+    def test_upgrade_31_file_draft_and_restore(self):
+        previous = self.older_patch(mod.PREVIOUS_31_PATHS)
+        self.assertEqual(len(mod.validated_manifest(previous)["files"]), 31)
+        mod.install(self.game, previous)
+        original = mod.backup_manifest(self.game)
+        mod.upgrade(self.game, self.folder)
+        self.assertEqual(set(mod.file_states(self.game, self.manifest).values()), {"installed"})
+        updated = mod.backup_manifest(self.game)
+        self.assertEqual(len(updated["files"]), len(mod.PATHS))
+        for key, value in original["files"].items():
+            self.assertEqual(value["original_sha256"], updated["files"][key]["original_sha256"])
+        mod.restore(self.game, self.folder)
+        self.assert_original()
+
+    def test_rejects_incomplete_manifest(self):
+        incomplete = Path(self.temp.name) / "incomplete"
+        shutil.copytree(self.folder, incomplete)
+        manifest = mod.load_json(incomplete / "manifest.json")
+        key = mod.PATHS[-1]
+        del manifest["files"][key]
+        mod.write_json(incomplete / "manifest.json", manifest)
+        with self.assertRaisesRegex(ValueError, "Unsupported or incomplete patch manifest"):
+            mod.validated_manifest(incomplete)
 
     def test_upgrade_rejects_foreign_modification(self):
         previous = self.older_patch()
