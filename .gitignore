@@ -1,0 +1,26 @@
+# Never commit game files, original text dumps, generated patches or backups.
+/out/
+/work/
+/tools/
+/translations_from_english.json
+/edits.json
+/curated_edits.py
+/fmsg_tool.py
+/*.fmsg
+/*.g1n
+/*.kscl
+/*.zip
+/*.7z
+/*.rar
+*.bak
+*.tmp
+__pycache__/
+*.py[cod]
+.venv/
+.vscode/
+.idea/
+.pytest_cache/
+.fatal-frame-es-originals/
+*.log
+.env
+.env.*

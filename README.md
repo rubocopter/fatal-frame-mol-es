@@ -1,0 +1,62 @@
+# FATAL FRAME / PROJECT ZERO: Mask of the Lunar Eclipse — Traducción al español (España)
+
+Proyecto **privado y en desarrollo** para traducir al castellano los textos de la versión de PC de *FATAL FRAME / PROJECT ZERO: Mask of the Lunar Eclipse*.
+
+La traducción se elabora a partir de los archivos **originales en inglés (`USen`)**. Un parche de terceros se utilizó inicialmente para identificar la ubicación de los recursos; **sus textos no son la base de esta traducción**.
+
+## Estado
+
+- **Borrador:** 7.238 entradas preparadas de un total de 9.030 cadenas FMSG.
+- El resto incluye textos pendientes de revisión y entradas que deben mantenerse intactas (nombres propios, códigos, créditos y avisos legales).
+- Los 13 archivos FMSG se reconstruyen y verifican contra el texto inglés original.
+- Fuente G1N adaptada para `á í ó ú ñ Á Í Ó Ú Ñ ¿ ¡`.
+- **Pendiente:** comprobar dentro del juego la representación de glifos, el ajuste de líneas y la calidad final de la traducción. No hay una versión final aprobada.
+
+## Contenido del repositorio
+
+Los módulos `*_translations.py`, `story_*.py` y `manual_translations.py` contienen la traducción editorial. `fmsg_format.py`, `clean_translation.py` y `font_support.py` se encargan de reconstruir los recursos desde una instalación legítima. `manage_patch.py` empaqueta e instala el borrador de forma reversible; `test_manage_patch.py` comprueba instalación, restauración y recuperación ante fallos.
+
+**El repositorio no incluye archivos originales del juego, volcados del texto inglés, archivos de fuentes/recursos propietarios ni parches compilados.** Estos archivos se generan localmente. Los derechos del juego corresponden a sus titulares. Proyecto no oficial y sin relación con KOEI TECMO.
+
+## Preparación local (Windows)
+
+Requisitos: Python 3.10+ y una copia del juego para PC con los archivos de texto originales en inglés.
+
+```powershell
+py -m pip install -r requirements.txt
+$env:FF_MOL_GAME_DIR = 'E:\Games\FATAL FRAME - PROJECT ZERO Mask of the Lunar Eclipse'
+```
+
+La variable `FF_MOL_GAME_DIR` debe apuntar a la carpeta del juego en tu equipo. Si no se define, se usa la ruta local de desarrollo de Windows.
+
+**Si ya está instalado un parche de prueba**, la compilación necesita los originales: utiliza como `FF_MOL_GAME_DIR` la carpeta `.fatal-frame-es-originals` de una copia de seguridad verificada. Para el subcomando `package`, `--game-root` también debe apuntar a esa carpeta de originales; para `status`, `install` y `restore`, apunta a la instalación real del juego. No sustituyas ni borres los archivos del juego para compilar.
+
+```powershell
+py -X utf8 clean_translation.py export
+py -X utf8 manual_translations.py
+py -X utf8 clean_translation.py build
+py -X utf8 font_support.py
+py -X utf8 manage_patch.py package --game-root "$env:FF_MOL_GAME_DIR"
+py -X utf8 manage_patch.py status --game-root "$env:FF_MOL_GAME_DIR"
+```
+
+La salida se almacena en `out/` y las evidencias de compilación y QA en `work/`. Todas estas carpetas están excluidas de Git. `translations_from_english.json` también se genera localmente.
+
+## Prueba del borrador
+
+Solo para pruebas y con el juego cerrado, después de verificar que `status` indica los 14 recursos originales:
+
+```powershell
+py -X utf8 manage_patch.py install --game-root "$env:FF_MOL_GAME_DIR"
+py -X utf8 manage_patch.py restore --game-root "$env:FF_MOL_GAME_DIR"
+```
+
+La instalación comprueba hashes SHA-256, crea una copia de seguridad en `.fatal-frame-es-originals` dentro del directorio del juego y restaura los originales bajo demanda. **Conserva esa copia de seguridad.** No se ha completado todavía la verificación visual dentro del juego.
+
+## Pruebas
+
+```powershell
+py -X utf8 -m unittest -v test_manage_patch
+```
+
+El trabajo editorial seguirá en los módulos de traducción. Antes de publicar una versión distribuible habrá que revisar cobertura, terminología, límites de texto y compatibilidad con los glifos españoles.
