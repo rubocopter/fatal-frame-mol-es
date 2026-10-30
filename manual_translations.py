@@ -7,31 +7,31 @@ Run to regenerate translations_from_english.json with source fingerprints.
 import json
 from collections import defaultdict
 from clean_translation import TRANSLATIONS, digest, source_files
-from story_translations import STORY
-from story_extra_translations import STORY_EXTRA
-from story_remaining_translations import STORY_REMAINING
-from story_ongoing_translations import STORY_ONGOING
-from story_final_text1 import STORY_FINAL
-from tutorial_final_translations import TUTORIAL_FINAL
-from artbook_translations import ARTBOOK
-from artbook_extended_translations import ARTBOOK_EXTENDED
-from artbook_lore_translations import ARTBOOK_LORE
-from bonus_ui_translations import BONUS_UI
-from credits_translations import CREDITS
-from ui_translations import UI
-from text2_translations import TEXT2
-from text2_scene_translations import SCENE
-from text2_lore_translations import LORE
-from text3_translations import SCENERY
-from text4_translations import CINEMATICS
-from text5_translations import RECORDINGS
-from text5_ui_translations import GALLERY
-from text5_accessories_translations import ACCESSORIES
-from text6_translations import TEXT6
-from text6_tail_translations import TEXT6_TAIL
-from text7_translations import TEXT7
-from text8_translations import TEXT8
-from text9_translations import TEXT9
+from translations.story_translations import STORY
+from translations.story_extra_translations import STORY_EXTRA
+from translations.story_remaining_translations import STORY_REMAINING
+from translations.story_ongoing_translations import STORY_ONGOING
+from translations.story_final_text1 import STORY_FINAL
+from translations.tutorial_final_translations import TUTORIAL_FINAL
+from translations.artbook_translations import ARTBOOK
+from translations.artbook_extended_translations import ARTBOOK_EXTENDED
+from translations.artbook_lore_translations import ARTBOOK_LORE
+from translations.bonus_ui_translations import BONUS_UI
+from translations.credits_translations import CREDITS
+from translations.ui_translations import UI
+from translations.text2_translations import TEXT2
+from translations.text2_scene_translations import SCENE
+from translations.text2_lore_translations import LORE
+from translations.text3_translations import SCENERY
+from translations.text4_translations import CINEMATICS
+from translations.text5_translations import RECORDINGS
+from translations.text5_ui_translations import GALLERY
+from translations.text5_accessories_translations import ACCESSORIES
+from translations.text6_translations import TEXT6
+from translations.text6_tail_translations import TEXT6_TAIL
+from translations.text7_translations import TEXT7
+from translations.text8_translations import TEXT8
+from translations.text9_translations import TEXT9
 
 # Exact-match replacements are reserved for context-independent UI labels.
 COMMON = {

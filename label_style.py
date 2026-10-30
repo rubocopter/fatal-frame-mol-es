@@ -102,7 +102,7 @@ def make_label(source, name, text):
                       "fnt_film_select", "fnt_tab_item_normal", "fnt_tab_item_select"}
     handwritten = name == "R_fnt_save_ingame"
     loop = name.endswith(("_loop", "_eff"))
-    selected = name.endswith(("_on", "_select", "_sel", "_glow"))
+    selected = name.lower().endswith(("_on", "_select", "_sel", "_glow"))
     rating = name.startswith(("fnt_bonus_", "fnt_type_", "fnt_main_", "fnt_basic_"))
     alpha = source.getchannel("A")
     opaque = alpha.histogram()[255] >= source.width * source.height * .99

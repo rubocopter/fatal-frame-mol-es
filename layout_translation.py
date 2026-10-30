@@ -17,6 +17,7 @@ import struct
 from PIL import Image
 
 from label_style import make_label
+from mixed_labels import repaint
 
 
 ROOT = Path(__file__).resolve().parent
@@ -26,6 +27,22 @@ OUTPUT = ROOT / "work" / "layout_es" / "binary" / "layout" / "en"
 # These are the labels actually drawn into the English interface textures.
 # Preserve branded logos, Japanese calligraphy, and other non-language art.
 LABELS = {
+    "option_menu.kscl": {
+        "photograph_OFF": "Modo foto",
+        "photograph_ON": "Modo foto",
+        "search_OFF": "Modo búsqueda",
+        "search_ON": "Modo búsqueda",
+    },
+    "pocketbook_layout_list_parts.kscl": {
+        "fusen_left": "NUEVO",
+        "fusen_right": "NUEVO",
+    },
+    "system_layout.kscl": {
+        "HOLD_OFF": "MANT.", "HOLD_ON": "MANT.",
+        "cmn_button_l_hold_off": "MANT.", "cmn_button_l_hold_on": "MANT.",
+        "cmn_button_zl_hold_off": "MANT.", "cmn_button_zl_hold_on": "MANT.",
+        "cmn_button_zr_hold_off": "MANT.", "cmn_button_zr_hold_on": "MANT.",
+    },
     "audio_list_parts.kscl": {"G_fnt_new": "NUEVO"},
     "change_costume_parts.kscl": {"G_fnt_new": "NUEVO"},
     "gallery_image_parts.kscl": {"G_fnt_new": "NUEVO"},
@@ -87,6 +104,7 @@ LABELS = {
         "fnt_ghostphoto_select": "Fotos de espectros",
     },
     "photo_layout.kscl": {
+        "icon_lock": "Bloquear",
         "fnt_onmemory_normal": "Foto temporal",
         "fnt_onmemory_select": "Foto temporal",
         "fnt_sortmenu_dmg_nor": "Daño",
@@ -180,11 +198,22 @@ LABELS = {
     },
 }
 
+from external_labels import EXTERNAL_LABELS
+LABELS.update(EXTERNAL_LABELS)
+from inline_labels import INLINE_LABELS
+for _filename in INLINE_LABELS:
+    LABELS.setdefault(_filename, {})
+
 
 def textures(raw: bytes):
-    if raw[:4] != b"LCSK":
-        raise ValueError("Unexpected KSCL header")
-    head = struct.unpack_from("<I", raw, 8)[0] + 0x8C
+    if raw[:4] == b"LCSK":
+        head = struct.unpack_from("<I", raw, 8)[0] + 0x8C
+    elif raw[:4] == b"TLSK":
+        head = 0
+    else:
+        raise ValueError("Unexpected KSCL/KSLT header")
+    if raw[head:head+4] != b"TLSK":
+        raise ValueError("Missing KSLT texture table")
     count = struct.unpack_from("<I", raw, head + 8)[0]
     table_pointer = struct.unpack_from("<I", raw, head + 16)[0]
     if count < 1 or count > 500 or head >= len(raw):
@@ -211,7 +240,7 @@ def decode(fmt, width, height, pixels):
         if len(pixels) != width * height * 4:
             raise ValueError("RGBA texture size mismatch")
         return Image.frombytes("RGBA", (width, height), pixels)
-    if fmt != 3 or len(pixels) != width * height:
+    if fmt not in (1, 3) or len(pixels) != width * height // (2 if fmt == 1 else 1):
         raise ValueError("Unsupported KSCL texture format")
     dds = bytearray(128)
     dds[:4] = b"DDS "
@@ -219,7 +248,7 @@ def decode(fmt, width, height, pixels):
     struct.pack_into("<II", dds, 16, width, len(pixels))
     struct.pack_into("<I", dds, 76, 32)
     struct.pack_into("<I", dds, 80, 4)
-    dds[84:88] = b"DXT5"
+    dds[84:88] = b"DXT1" if fmt == 1 else b"DXT5"
     struct.pack_into("<I", dds, 108, 0x1000)
     return Image.open(io.BytesIO(dds + pixels)).convert("RGBA")
 
@@ -259,11 +288,30 @@ def build(game: Path = GAME):
         if unknown:
             raise ValueError(f"Missing expected textures in {filename}: {unknown}")
         rebuilt = bytearray(raw)
+        if filename in INLINE_LABELS:
+            from inline_labels import replacements as inline_replacements
+            for start, end, text in inline_replacements(raw, filename):
+                rebuilt[start:end] = text
         for name, spanish in replacements.items():
             fmt, width, height, start, length = index[name]
             image = decode(fmt, width, height, raw[start:start + length])
-            updated = make_label(image, name, spanish)
-            rebuilt[start:start + length] = encode(updated, fmt, length)
+            if filename.endswith(".kslt"):
+                from external_style import render
+                updated, box = render(image, name, spanish)
+            else:
+                updated, box = repaint(image, name, spanish, make_label)
+            pixels = encode(updated, fmt, length)
+            if fmt == 3:
+                # BC3 encodes 4x4 blocks. Keep every block outside the text
+                # region byte-identical, including the padlock/button art.
+                boxes = [box] if isinstance(box, tuple) else box
+                for x0, y0, x1, y1 in boxes:
+                    for row in range(y0 // 4, (y1 + 3) // 4):
+                        a = (row * (width // 4) + x0 // 4) * 16
+                        b = (row * (width // 4) + (x1 + 3) // 4) * 16
+                        rebuilt[start+a:start+b] = pixels[a:b]
+            else:
+                rebuilt[start:start + length] = pixels
         if len(rebuilt) != len(raw):
             raise ValueError(f"KSCL size changed: {filename}")
         # Verify the headers, untouched regions and texture indexing survived.
@@ -275,7 +323,7 @@ def build(game: Path = GAME):
         report[filename] = list(replacements)
     path = ROOT / "work" / "layout_es_qa.json"
     path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"Localized {sum(map(len, report.values()))} interface sprites in {len(report)} KSCL assets: {OUTPUT}")
+    print(f"Localized {sum(map(len, report.values()))} interface sprites in {len(report)} KSCL/KSLT assets: {OUTPUT}")
 
 
 if __name__ == "__main__":

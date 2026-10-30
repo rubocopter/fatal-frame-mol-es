@@ -19,6 +19,10 @@ class PatchLifecycle(unittest.TestCase):
         self.temp = TemporaryDirectory(prefix="mol-patch-test-")
         self.addCleanup(self.temp.cleanup)
         self.game = Path(self.temp.name) / "simulated_game"
+        # Lifecycle writes target only this temporary simulated installation.
+        running = patch.object(mod, "game_is_running", return_value=False)
+        running.start()
+        self.addCleanup(running.stop)
         self.folder = mod.DIST
         self.manifest = mod.validated_manifest(self.folder)
         for name in mod.PATHS:
@@ -36,6 +40,13 @@ class PatchLifecycle(unittest.TestCase):
 
     def assert_original(self):
         self.assertEqual(set(mod.file_states(self.game, self.manifest).values()), {"original"})
+
+    def test_refuses_install_while_game_running(self):
+        with patch.object(mod, "game_is_running", return_value=True):
+            with self.assertRaisesRegex(RuntimeError, "Close FATAL_FRAME_MOL"):
+                mod.install(self.game, self.folder)
+        self.assert_original()
+        self.assertFalse((self.game / mod.BACKUP_FOLDER).exists())
 
     def test_install_restore_reinstall(self):
         mod.install(self.game, self.folder)
@@ -156,7 +167,21 @@ class PatchLifecycle(unittest.TestCase):
         mod.restore(self.game, self.folder)
         self.assert_original()
 
-    def test_upgrade_same_42_paths_with_changed_texture_and_restore(self):
+    def test_upgrade_42_file_draft_and_restore(self):
+        previous = self.older_patch(mod.PREVIOUS_42_PATHS)
+        self.assertEqual(len(mod.validated_manifest(previous)["files"]), 42)
+        mod.install(self.game, previous)
+        original = mod.backup_manifest(self.game)
+        mod.upgrade(self.game, self.folder)
+        self.assertEqual(set(mod.file_states(self.game, self.manifest).values()), {"installed"})
+        updated = mod.backup_manifest(self.game)
+        self.assertEqual(updated["files"], self.manifest["files"])
+        for key, value in original["files"].items():
+            self.assertEqual(value["original_sha256"], updated["files"][key]["original_sha256"])
+        mod.restore(self.game, self.folder)
+        self.assert_original()
+
+    def test_upgrade_same_paths_with_changed_texture_and_restore(self):
         import layout_translation
 
         previous = self.older_patch(mod.PATHS)
@@ -178,6 +203,16 @@ class PatchLifecycle(unittest.TestCase):
         self.assertEqual(mod.backup_manifest(self.game)["files"], self.manifest["files"])
         self.assertEqual(originals, {p: mod.sha(self.game / mod.BACKUP_FOLDER / mod.relative(p))
                                      for p in mod.PATHS})
+        mod.restore(self.game, self.folder)
+        self.assert_original()
+
+    def test_upgrade_45_file_draft_and_restore(self):
+        previous = self.older_patch(mod.PREVIOUS_45_PATHS)
+        self.assertEqual(len(mod.validated_manifest(previous)["files"]), 45)
+        mod.install(self.game, previous)
+        mod.upgrade(self.game, self.folder)
+        self.assertEqual(set(mod.file_states(self.game, self.manifest).values()), {"installed"})
+        self.assertEqual(mod.backup_manifest(self.game)["files"], self.manifest["files"])
         mod.restore(self.game, self.folder)
         self.assert_original()
 
@@ -268,7 +303,7 @@ class PatchLifecycle(unittest.TestCase):
         with (patch.object(layout_translation, "ROOT", scratch),
               patch.object(layout_translation, "OUTPUT", output)):
             layout_translation.build(self.game)
-        for name in mod.KSCL_FILES:
+        for name in (*mod.KSCL_FILES, *mod.KSLT_FILES):
             rel = Path("binary/layout/en") / name
             self.assertEqual(mod.sha(output / name), mod.sha(self.folder / rel))
 

@@ -1,6 +1,6 @@
 """English-source tutorial/UI variants, consistent with reviewed tutorials in text9."""
 
-from text9_translations import TEXT9
+from translations.text9_translations import TEXT9
 
 
 def tutorial(i):

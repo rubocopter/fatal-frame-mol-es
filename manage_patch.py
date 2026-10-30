@@ -47,7 +47,7 @@ PREVIOUS_31_KSCL_FILES = PREVIOUS_KSCL_FILES + (
     "tv_rating_layout.kscl",
 )
 PREVIOUS_31_PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in PREVIOUS_31_KSCL_FILES]
-KSCL_FILES = PREVIOUS_31_KSCL_FILES + (
+PREVIOUS_42_KSCL_FILES = PREVIOUS_31_KSCL_FILES + (
     "audio_list_parts.kscl", "change_costume_parts.kscl",
     "gallery_image_parts.kscl", "ghostlist_list_parts.kscl",
     "item_exchange_parts.kscl", "item_list_parts.kscl",
@@ -55,7 +55,18 @@ KSCL_FILES = PREVIOUS_31_KSCL_FILES + (
     "mission_start_layout.kscl", "now_saving_layout.kscl",
     "pause_layout.kscl",
 )
-PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in KSCL_FILES]
+PREVIOUS_42_PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in PREVIOUS_42_KSCL_FILES]
+KSCL_FILES = PREVIOUS_42_KSCL_FILES + (
+    "option_menu.kscl", "pocketbook_layout_list_parts.kscl", "system_layout.kscl",
+)
+PREVIOUS_45_PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in KSCL_FILES]
+KSCL_FILES = KSCL_FILES + (
+    "change_costume.kscl", "inventory_layout.kscl", "mission_select.kscl",
+    "photo_details.kscl", "savedata_select_list.kscl",
+)
+from external_labels import EXTERNAL_LABELS
+KSLT_FILES = tuple(EXTERNAL_LABELS)
+PATHS = LEGACY_PATHS + [f"binary/layout/en/{name}" for name in (*KSCL_FILES, *KSLT_FILES)]
 
 
 def sha(path: Path) -> str:
@@ -85,6 +96,10 @@ def managed_paths(manifest: dict) -> list[str]:
     files = manifest.get("files", {})
     if set(files) == set(PATHS):
         return PATHS
+    if set(files) == set(PREVIOUS_45_PATHS):
+        return PREVIOUS_45_PATHS
+    if set(files) == set(PREVIOUS_42_PATHS):
+        return PREVIOUS_42_PATHS
     if set(files) == set(PREVIOUS_31_PATHS):
         return PREVIOUS_31_PATHS
     if set(files) == set(PREVIOUS_18_PATHS):
@@ -99,7 +114,7 @@ def built_file(path: str) -> Path:
         return FMSG / Path(path).name
     if path.endswith(".g1n"):
         return FONT
-    return LAYOUT / Path(path).name
+    return LAYOUT / Path(path).relative_to("binary/layout/en")
 
 
 def original_file(game: Path, path: str) -> Path:
@@ -148,7 +163,7 @@ def package(game: Path) -> None:
         raise ValueError("The game's original font has changed")
 
     from layout_translation import LABELS
-    if set(LABELS) != set(KSCL_FILES):
+    if set(LABELS) != set(KSCL_FILES) | set(KSLT_FILES):
         raise ValueError("Incomplete translated KSCL inventory")
     if load_json(PROJECT / "work" / "layout_es_qa.json") != {
             filename: list(labels) for filename, labels in LABELS.items()}:
@@ -185,6 +200,8 @@ def package(game: Path) -> None:
         "files": files,
     })
     shutil.copy2(Path(__file__), DIST / "manage_patch.py")
+    shutil.copy2(PROJECT / "external_labels.py", DIST / "external_labels.py")
+    shutil.copy2(PROJECT / "tutorial_labels.py", DIST / "tutorial_labels.py")
     (DIST / "README.txt").write_text(
         "Traducción es-ES de FATAL FRAME / PROJECT ZERO: Mask of the Lunar Eclipse\n"
         "BORRADOR: aún sin verificación visual completa dentro del juego.\n\n"
@@ -195,7 +212,7 @@ def package(game: Path) -> None:
         "  python manage_patch.py install\n"
         "  python manage_patch.py upgrade  (si ya hay un borrador instalado)\n"
         "  python manage_patch.py restore\n\n"
-        f"Incluye 13 FMSG, fuente G1N y {len(KSCL_FILES)} KSCL de interfaz.\n"
+        f"Incluye 13 FMSG, fuente G1N, {len(KSCL_FILES)} KSCL y {len(KSLT_FILES)} KSLT de interfaz.\n"
         "El instalador verifica los archivos del juego mediante SHA-256 y crea\n"
         "una copia de seguridad en .fatal-frame-es-originals. No la borres.\n"
         "La instalación queda bloqueada si el juego no coincide con la versión\n"

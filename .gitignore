@@ -1,7 +1,8 @@
 # Never commit game files, original text dumps, generated patches or backups.
 /out/
 /work/
-/tools/
+/tools/*
+!/tools/README.md
 /translations_from_english.json
 /edits.json
 /curated_edits.py
