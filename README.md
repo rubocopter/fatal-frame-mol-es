@@ -96,4 +96,6 @@ Salidas: `out/release/v0.1.0/FATAL-FRAME-MOL-ES-Setup.exe`, `SHA256SUMS.txt` y `
 - [Herramientas de referencia](tools/README.md).
 - [Notas históricas](docs/history/README.md).
 
+Como proyecto futuro independiente, queda documentado el [proceso completo para traducir Maiden of Black Water del inglés al castellano, incluidos sus gráficos](docs/superpowers/plans/2026-10-30-maiden-of-black-water-castellano.md). El documento recoge el reconocimiento ya realizado y las fases pendientes; la traducción de ese juego todavía no se ha iniciado.
+
 Proyecto no oficial, sin relación con KOEI TECMO. Los derechos del juego pertenecen a sus titulares.
